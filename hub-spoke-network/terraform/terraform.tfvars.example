@@ -1,0 +1,50 @@
+# hub-spoke-network — example variable values
+# Copy to terraform.tfvars and fill in your values.
+# Never commit terraform.tfvars to source control — it is in .gitignore.
+
+prefix         = "contoso"
+environment    = "prod"
+location       = "australiaeast"
+location_short = "aue"
+
+# Hub address space
+hub_address_space  = "10.0.0.0/16"
+subnet_gateway     = "10.0.0.0/27"   # GatewaySubnet        — minimum /27
+subnet_firewall    = "10.0.1.0/26"   # AzureFirewallSubnet  — minimum /26
+subnet_bastion     = "10.0.2.0/26"   # AzureBastionSubnet   — minimum /26
+subnet_dns_inbound = "10.0.3.0/28"   # DNS Resolver inbound — minimum /28
+
+# Configure this IP as the conditional forwarder target on your on-prem DNS server
+# for all privatelink.*.windows.net zones
+dns_resolver_inbound_ip = "10.0.3.4"
+
+# Spokes — add as many as needed
+spokes = {
+  "workload-a" = {
+    address_space = "10.1.0.0/16"
+    subnets = {
+      "app"  = { address_prefix = "10.1.0.0/24" }
+      "data" = { address_prefix = "10.1.1.0/24" }
+    }
+  }
+  "workload-b" = {
+    address_space = "10.2.0.0/16"
+    subnets = {
+      "app" = { address_prefix = "10.2.0.0/24" }
+    }
+  }
+}
+
+# VPN Gateway
+deploy_vpn_gateway = true
+vpn_gateway_sku    = "VpnGw1AZ"
+gateway_asn        = 65515
+
+# Firewall — use "Premium" if TLS inspection or IDPS is required
+firewall_sku_tier = "Standard"
+
+# Tags
+tags = {
+  cost-centre = "platform"
+  owner       = "platform-team"
+}
